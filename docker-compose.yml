@@ -1,0 +1,41 @@
+version: '2'
+services:
+  mysql:
+    image: mysql:5.6
+    container_name: mysql-server-56
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - .:/application
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=.sweetpwd.
+      - MYSQL_DATABASE=my_db
+      - MYSQL_USER=db_user
+      - MYSQL_PASSWORD=.mypwd
+    ports:
+      - 8082:3306
+
+  website:
+    container_name: php73
+    image: php_img
+    build:
+      context: ./
+    volumes:
+      - C:\work\projects\php-tutorial\src:/var/www/html/
+    ports:
+      - 8000:80
+    depends_on:
+      - mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8183:80
